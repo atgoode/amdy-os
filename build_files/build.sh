@@ -1,27 +1,35 @@
 #!/bin/bash
-
+# AMDY image: Bazzite-DX (ROCm, developer tools, Steam) plus what an agent-run
+# machine needs. Everything user-level (models, amdy-llm, containers) lives in
+# /var/home/andrew and the amdy-llm repo, not here.
 set -ouex pipefail
 
-# Copy the contents of system_files/ of the git repo to /
 cp -avf "/ctx/system_files"/. /
 
-### Install packages
+### NetBird client (official RPM repo). Updates arrive with each image rebuild,
+### so the repo is disabled in the final image.
+cat > /etc/yum.repos.d/netbird.repo <<'REPO'
+[netbird]
+name=netbird
+baseurl=https://pkgs.netbird.io/yum/
+enabled=1
+gpgcheck=0
+gpgkey=https://pkgs.netbird.io/yum/repodata/repomd.xml.key
+repo_gpgcheck=1
+REPO
+dnf5 install -y netbird
+sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/netbird.repo
+systemctl enable netbird.service   # unit ships in system_files/etc/systemd/system
 
-# Packages can be installed from any enabled yum repo on the image.
-# RPMfusion repos are available by default in ublue main images
-# List of rpmfusion packages can be found here:
-# https://mirrors.rpmfusion.org/mirrorlist?path=free/fedora/updates/43/x86_64/repoview/index.html&protocol=https&redirect=1
+### Admin tools agents use
+dnf5 install -y smartmontools dmidecode nvtop socat
 
-# this installs a package from fedora repos
-dnf5 install -y tmux
+### SSH: keys only, NetBird addresses only (see system_files/etc/ssh)
+chmod 0644 /etc/ssh/authorized_keys.d/andrew
+systemctl enable sshd.service
 
-# Use a COPR Example:
-#
-# dnf5 -y copr enable ublue-os/staging
-# dnf5 -y install package
-# Disable COPRs so they don't end up enabled on the final image:
-# dnf5 -y copr disable ublue-os/staging
-
-#### Example for enabling a System Unit File
+### Scoped passwordless sudo for agents (see system_files/etc/sudoers.d)
+chmod 0440 /etc/sudoers.d/50-agents
+visudo -cf /etc/sudoers.d/50-agents
 
 systemctl enable podman.socket
