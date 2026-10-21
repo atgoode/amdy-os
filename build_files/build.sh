@@ -17,7 +17,9 @@ gpgcheck=0
 gpgkey=https://pkgs.netbird.io/yum/repodata/repomd.xml.key
 repo_gpgcheck=1
 REPO
-dnf5 install -y netbird
+# --setopt=tsflags=noscripts: the RPM's %post runs `netbird service install` and starts it,
+# which fails in an image build; the unit ships in system_files instead.
+dnf5 install -y --setopt=tsflags=noscripts netbird
 sed -i 's/^enabled=1/enabled=0/' /etc/yum.repos.d/netbird.repo
 systemctl enable netbird.service   # unit ships in system_files/etc/systemd/system
 
