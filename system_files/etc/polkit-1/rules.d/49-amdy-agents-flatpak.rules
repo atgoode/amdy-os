@@ -1,0 +1,11 @@
+// Let agents (user andrew over SSH) manage system Flatpaks without a password prompt.
+// Bazzite's own rule (org.freedesktop.Flatpak.rules) only allows this for an active local
+// session. Parental-control overrides keep their default (admin authentication).
+polkit.addRule(function (action, subject) {
+    if (action.id.indexOf("org.freedesktop.Flatpak.") === 0 &&
+        action.id.indexOf("org.freedesktop.Flatpak.override-parental-controls") !== 0 &&
+        subject.user === "andrew") {
+        return polkit.Result.YES;
+    }
+    return polkit.Result.NOT_HANDLED;
+});

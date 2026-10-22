@@ -1,6 +1,7 @@
 # Passwordless commands for agents operating AMDY over SSH. Everything else that
 # needs root goes through a change to this repo (new image) or Andrew.
 Cmnd_Alias AMDY_IMAGE  = /usr/bin/bootc status, /usr/bin/bootc status *, /usr/bin/bootc upgrade, /usr/bin/bootc upgrade *, /usr/bin/bootc rollback, /usr/bin/bootc switch ghcr.io/atgoode/amdy-os\:*
+Cmnd_Alias AMDY_UPDATE = /usr/bin/systemctl start uupd.service, /usr/bin/systemctl start --no-block uupd.service
 Cmnd_Alias AMDY_POWER  = /usr/bin/systemctl reboot, /usr/bin/systemctl poweroff
 Cmnd_Alias AMDY_READ   = /usr/sbin/dmidecode, /usr/sbin/dmidecode *, /usr/sbin/smartctl -a /dev/nvme0, /usr/bin/firewall-cmd --list-all, /usr/bin/firewall-cmd --list-all-zones, /usr/bin/journalctl, /usr/bin/journalctl *, /usr/bin/netbird status, /usr/bin/netbird status *
-andrew ALL=(root) NOPASSWD: AMDY_IMAGE, AMDY_POWER, AMDY_READ
+andrew ALL=(root) NOPASSWD: AMDY_IMAGE, AMDY_UPDATE, AMDY_POWER, AMDY_READ

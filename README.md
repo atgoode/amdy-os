@@ -7,6 +7,8 @@ The OS image for **AMDY** (Ryzen 9 9900X3D, RX 9070 XT): [Bazzite-DX](https://gi
 | NetBird client (official RPM, repo disabled after install) + service unit | `build_files/build.sh`, `system_files/etc/systemd/system/netbird.service` |
 | SSH: keys only, no root, user `andrew` only from NetBird (`100.64.0.0/10`), Mac key baked in | `system_files/etc/ssh/` |
 | Passwordless sudo for agents, limited to `bootc` status/upgrade/rollback/switch-to-this-image, reboot/poweroff, and read-only checks | `system_files/etc/sudoers.d/50-agents` |
+| Agents can update everything: `sudo systemctl start uupd.service` (Bazzite's updater: image, Flatpaks, distrobox, brew) | `system_files/etc/sudoers.d/50-agents` |
+| Agents can manage system Flatpaks over SSH without a password (not parental-control overrides) | `system_files/etc/polkit-1/rules.d/49-amdy-agents-flatpak.rules` |
 | `smartmontools`, `dmidecode`, `nvtop`, `socat` | `build_files/build.sh` |
 
 Not in here, by design: models, llama.cpp, ComfyUI and the amdy-llm controller (user-level, in containers; see the private `amdy-llm` repo and its `MIGRATION-bazzite.md`). No secrets: the image is public.
