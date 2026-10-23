@@ -26,6 +26,11 @@ systemctl enable netbird.service   # unit ships in system_files/etc/systemd/syst
 ### Admin tools agents use
 dnf5 install -y smartmontools dmidecode nvtop socat
 
+### Fan control: CoolerControl + liquidctl from Terra (what `ujust install-coolercontrol`
+### would layer, built in instead). Sensors come from nct6775 (system_files/usr/lib/modules-load.d).
+dnf5 install -y --enablerepo=terra liquidctl coolercontrol coolercontrold
+systemctl enable coolercontrold.service
+
 ### SSH: keys only, NetBird addresses only (see system_files/etc/ssh)
 chmod 0644 /etc/ssh/authorized_keys.d/andrew
 systemctl enable sshd.service
