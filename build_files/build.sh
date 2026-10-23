@@ -40,3 +40,6 @@ chmod 0440 /etc/sudoers.d/50-agents
 visudo -cf /etc/sudoers.d/50-agents
 
 systemctl enable podman.socket
+
+### Docker ships in Bazzite-DX but we use podman; its socket fails without a docker group.
+systemctl disable docker.socket docker.service
